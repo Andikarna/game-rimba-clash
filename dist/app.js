@@ -79,7 +79,7 @@ function frame(now){
  while(acc>=1/120&&guard++<12){engine.update(1/120,input());jump=false;acc-=1/120;}
  soundtrack.setScene(document.hidden?'hidden':engine.phase,engine.phase==='fight'&&engine.time<=15);
  for(const event of engine.events.splice(0))onEvent(event);
- renderer.draw(engine.phase==='paused'?0:dt,picks);updateUI();requestAnimationFrame(frame);
+ renderer.draw(engine.phase==='paused'?0:dt,picks,target);updateUI();requestAnimationFrame(frame);
 }
 function keyDown(key){
  if(key==='escape'){pause();return}
