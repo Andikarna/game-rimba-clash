@@ -243,6 +243,42 @@ export const ROSTER=[
     "ending": "Sekar menemukan bahwa rahasia kutukan bukan milik satu orang. Ia memilih memutus rantainya."
   },
   {
+    "id": "lala",
+    "name": "LALA",
+    "short": "LALA",
+    "title": "Si Risol Rimba",
+    "role": "ZONER",
+    "color": "#b5e87a",
+    "hp": 960,
+    "speed": 295,
+    "power": 0.97,
+    "armor": 1,
+    "reach": 1.12,
+    "stats": [
+      3,
+      4,
+      3
+    ],
+    "effect": 1,
+    "story": "Penjual risol paling terkenal di pasar Rimba. Lala memasuki turnamen membawa keranjang risol andalannya — dan jangan salah, lemparan risolnya bisa bikin pingsan!",
+    "special": {
+      "name": "Lempar Risol",
+      "type": "projectile",
+      "description": "Melempar risol panas yang membakar lawan selama 2 detik.",
+      "damage": 62,
+      "cooldown": 3.8,
+      "status": "burn"
+    },
+    "ultimate": {
+      "name": "Hujan Risol",
+      "type": "barrage",
+      "description": "Lemparkan 5 risol panas beruntun ke arah lawan!",
+      "damage": 38,
+      "status": "burn"
+    },
+    "ending": "Lala mengangkat keranjang risolnya tinggi-tinggi. \"Siapa bilang jualan risol nggak keren?\""
+  },
+  {
     "id": "guntur",
     "name": "GUNTUR",
     "short": "GUNTUR",

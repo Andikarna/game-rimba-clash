@@ -129,7 +129,7 @@ export class FightEngine {
    if(at.nextPulse<=0&&at.pulse<total){
     at.nextPulse=at.type==='flurry'?.14:.2;at.pulse++;
     if(at.type==='flurry'&&Math.abs(f.x-o.x)<190&&Math.abs(f.y-o.y)<175)this.hit(f,o,at.damage,{stun:.15,knock:4,ultimate:true});
-    if(at.type==='barrage')this.projectile(f,{damage:at.damage,status:at.status,y:f.y-100-(at.pulse%2)*30,speed:620});
+    if(at.type==='barrage')this.projectile(f,{damage:at.damage,status:at.status??f.data.ultimate?.status,y:f.y-100-(at.pulse%2)*30,speed:620});
     if(at.type==='quake'){this.projectile(f,{damage:at.damage,ground:true,y:RULES.floor-15,speed:440,big:at.ultimate});this.shake=.14;}
    }
    if(at.pulse<total||at.nextPulse>0)return;
