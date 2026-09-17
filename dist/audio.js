@@ -10,10 +10,10 @@ export class GameAudio {
   this.factory=contextFactory||(()=>new(window.AudioContext||window.webkitAudioContext)());
   this.storage=storage;try{this.storage??=globalThis.localStorage}catch{}
   this.settings={enabled:true,music:.38,effects:.75};
-  try{const p=JSON.parse(this.storage?.getItem('rimba-clash-audio')||'null');if(p){this.settings.enabled=p.enabled!==false;this.settings.music=clamp(p.music??.38);this.settings.effects=clamp(p.effects??.75)}}catch{}
+  try{const p=JSON.parse(this.storage?.getItem('adi-clash-audio')||'null');if(p){this.settings.enabled=p.enabled!==false;this.settings.music=clamp(p.music??.38);this.settings.effects=clamp(p.effects??.75)}}catch{}
   this.ctx=null;this.unlocked=false;this.scene='select';this.voices=new Set();this.interval=null;this.step=0;this.nextTime=0;this.urgent=false;this.lastFx=new Map();
  }
- save(){try{this.storage?.setItem('rimba-clash-audio',JSON.stringify(this.settings))}catch{}}
+ save(){try{this.storage?.setItem('adi-clash-audio',JSON.stringify(this.settings))}catch{}}
  async unlock(){
   try{
    if(!this.ctx){
