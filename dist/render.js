@@ -49,13 +49,85 @@ export class Renderer{
   c.fillStyle='rgba(255,245,150,0.38)';c.beginPath();c.ellipse(-size*.1,-size*.06,size*.2,size*.07,-.3,0,Math.PI*2);c.fill();
   c.restore();
  }
- draw(dt,picks=[0,2]){
+ draw(dt,picks=[0,2],target=0){
   this.clock+=dt;const c=this.ctx,e=this.engine;const w=1280,h=720;c.clearRect(0,0,w,h);
   if(this.images.arena)c.drawImage(this.images.arena,0,0,w,h);
   else{const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#302939');g.addColorStop(1,'#6c5143');c.fillStyle=g;c.fillRect(0,0,w,h);}
   c.fillStyle='#17122225';c.fillRect(0,0,w,h);
   if(e.phase==='select'){
-   this.sprite(c,ROSTER[picks[1]].id,0,985,615,340,-1,{alpha:.85});
+   const p1=ROSTER[picks[0]], p2=ROSTER[picks[1]];
+   const getH=id=>id==='fahrudin'?370:id==='lukman'?260:340;
+   const h1=getH(p1.id), h2=getH(p2.id);
+   const bob1=this.reduced?0:Math.sin(this.clock*4)*3;
+   const bob2=this.reduced?0:Math.sin(this.clock*4+1)*3;
+
+   // Shadows
+   c.save();c.globalAlpha=.35;c.fillStyle='#07070e';
+   c.beginPath();c.ellipse(340,RULES.floor+5,95,15,0,0,Math.PI*2);c.fill();
+   c.beginPath();c.ellipse(940,RULES.floor+5,95,15,0,0,Math.PI*2);c.fill();
+   c.restore();
+
+   // Selection rings
+   c.save();
+   c.strokeStyle=target===0?'#e5ff62':'#85edb255';
+   c.lineWidth=target===0?4:2;
+   c.beginPath();c.ellipse(340,RULES.floor+5,target===0?100:85,target===0?17:14,0,0,Math.PI*2);c.stroke();
+   if(target===0){c.fillStyle='#e5ff621a';c.fill();}
+   c.restore();
+
+   c.save();
+   c.strokeStyle=target===1?'#e5ff62':'#ff887b55';
+   c.lineWidth=target===1?4:2;
+   c.beginPath();c.ellipse(940,RULES.floor+5,target===1?100:85,target===1?17:14,0,0,Math.PI*2);c.stroke();
+   if(target===1){c.fillStyle='#e5ff621a';c.fill();}
+   c.restore();
+
+   // P1 (Left side, facing right) & P2 (Right side, facing left)
+   this.sprite(c,p1.id,0,340,615+bob1,h1,1,{alpha:1});
+   this.sprite(c,p2.id,0,940,615+bob2,h2,-1,{alpha:1});
+
+   // P1 Name Tag
+   c.save();
+   c.fillStyle='rgba(15,16,22,0.82)';
+   c.strokeStyle=target===0?'#e5ff62':'#303038';
+   c.lineWidth=2;
+   c.beginPath();
+   if(c.roundRect)c.roundRect(40,35,290,70,6);else c.rect(40,35,290,70);
+   c.fill();c.stroke();
+   c.fillStyle=target===0?'#e5ff62':'#85edb2';
+   c.font='bold 11px Barlow,sans-serif';
+   c.fillText('PLAYER 01'+(target===0?' · MEMILIH':''),55,55);
+   c.fillStyle='#ffffff';
+   c.font='800 24px "Barlow Condensed",sans-serif';
+   c.fillText(p1.name,55,85);
+   c.restore();
+
+   // P2 Name Tag
+   c.save();
+   c.fillStyle='rgba(15,16,22,0.82)';
+   c.strokeStyle=target===1?'#e5ff62':'#303038';
+   c.lineWidth=2;
+   c.beginPath();
+   if(c.roundRect)c.roundRect(950,35,290,70,6);else c.rect(950,35,290,70);
+   c.fill();c.stroke();
+   c.fillStyle=target===1?'#e5ff62':'#ff887b';
+   c.font='bold 11px Barlow,sans-serif';
+   c.fillText('LAWAN AI / P2'+(target===1?' · MEMILIH':''),965,55);
+   c.fillStyle='#ffffff';
+   c.font='800 24px "Barlow Condensed",sans-serif';
+   c.fillText(p2.name,965,85);
+   c.restore();
+
+   // Central VS Badge
+   c.save();
+   c.shadowColor='#000';c.shadowBlur=12;
+   c.fillStyle='#14141d';c.strokeStyle='#e5ff62';c.lineWidth=3;
+   c.beginPath();c.arc(640,240,48,0,Math.PI*2);c.fill();c.stroke();
+   c.fillStyle='#e5ff62';c.textAlign='center';c.textBaseline='middle';
+   c.font='900 italic 48px "Barlow Condensed",sans-serif';
+   c.fillText('VS',640,242);
+   c.restore();
+
    return;
   }
   c.save();if(e.shake>0&&!this.reduced)c.translate(Math.sin(this.clock*180)*e.shake*22,Math.cos(this.clock*155)*e.shake*12);
