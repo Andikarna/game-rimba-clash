@@ -271,8 +271,8 @@ export const ROSTER=[
     },
     "ultimate": {
       "name": "Hujan Risol",
-      "type": "barrage",
-      "description": "Lemparkan 5 risol panas beruntun ke arah lawan!",
+      "type": "rain",
+      "description": "Risol panas berjatuhan dari langit tepat di atas lawan!",
       "damage": 38,
       "status": "burn"
     },

@@ -90,17 +90,18 @@ export class FightEngine {
    a.x=clamp(a.x+sign*overlap,RULES.left,RULES.right);b.x=clamp(b.x-sign*overlap,RULES.left,RULES.right);
   }
   for(const p of this.projectiles){
-   p.life-=dt;p.x+=p.vx*dt;const o=this.fighters[1-p.owner],f=this.fighters[p.owner];
-   const hitY=p.ground?this.grounded(o):p.y>=o.y-this.height(o)&&p.y<=o.y+10;
+   p.life-=dt;p.x+=p.vx*dt;p.y+=(p.vy??0)*dt;if((p.vy??0)>0)p.vy=Math.min(p.vy+350*dt,950);
+   const o=this.fighters[1-p.owner],f=this.fighters[p.owner];
+   const hitY=p.ground?this.grounded(o):p.y>=o.y-this.height(o)&&p.y<=o.y+30;
    if(p.life>0&&Math.abs(p.x-o.x)<p.radius+38&&hitY){this.hit(f,o,p.damage,{status:p.status,stun:.25,knock:p.big?45:18,origin:p.x,ultimate:p.big});p.life=0;this.effect(p.x,p.y,p.fx,p.big?230:110);}
   }
-  this.projectiles=this.projectiles.filter(p=>p.life>0&&p.x>-150&&p.x<1430);
+  this.projectiles=this.projectiles.filter(p=>p.life>0&&p.x>-150&&p.x<1430&&p.y<RULES.floor+60);
   for(const e of this.effects)e.life-=dt;this.effects=this.effects.filter(e=>e.life>0);
   if(a.hp<=0||b.hp<=0||this.time<=0)this.finishRound();
  }
- projectile(f,s={}){
-  this.projectiles.push({owner:f.index,x:s.x??f.x+f.dir*65,y:s.y??f.y-125,vx:f.dir*(s.speed??530),life:3,damage:s.damage??60,status:s.status,ground:s.ground??false,ally:s.ally??false,fx:s.fx??f.data.effect,radius:s.big?95:26,big:s.big??false});
- }
+  projectile(f,s={}){
+   this.projectiles.push({owner:f.index,x:s.x??f.x+f.dir*65,y:s.y??f.y-125,vx:s.vx!==undefined?s.vx:f.dir*(s.speed??530),vy:s.vy??0,life:s.life??3,damage:s.damage??60,status:s.status,ground:s.ground??false,ally:s.ally??false,fx:s.fx??f.data.effect,radius:s.big?95:s.radius??26,big:s.big??false,isRisol:s.isRisol??false});
+  }
  effect(x,y,fx,size=130){this.effects.push({x,y,fx,size,life:.36,max:.36,angle:(this.random()-.5)*.4})}
  updateAttack(f,o,dt){
   const at=f.attack;at.t+=dt;
@@ -112,7 +113,7 @@ export class FightEngine {
    at.fired=true;this.effect(f.x+f.dir*60,f.y-120,f.data.effect,at.ultimate?210:115);
    if(at.type==='summon'){f.summon=6;f.summonTick=.25;this.emit('skill',{index:f.index,name:'LUKMAN DIPANGGIL'});}
    if(at.type==='shield'){f.shield=4;this.emit('skill',{index:f.index,name:'PERISAI BUMI'});}
-   if(at.type==='projectile'||at.type==='beam')this.projectile(f,{damage:at.damage,status:at.status,big:at.type==='beam',speed:at.type==='beam'?690:530});
+   if(at.type==='projectile'||at.type==='beam')this.projectile(f,{damage:at.damage,status:at.status,big:at.type==='beam',speed:at.type==='beam'?690:530,isRisol:f.data.id==='lala'});
    if(at.type==='teleport'||(at.type==='flurry'&&f.data.id==='sekar')){f.x=clamp(o.x-o.dir*105,RULES.left,RULES.right);f.dir=Math.sign(o.x-f.x)||1;f.invul=.15;this.effect(f.x,f.y-120,3,200);}
    if(at.type==='teleport'&&Math.abs(f.x-o.x)<200&&Math.abs(f.y-o.y)<180)this.hit(f,o,at.damage,{stun:.3,knock:18});
    if(at.type==='slam'&&Math.abs(f.x-o.x)<300&&Math.abs(f.y-o.y)<220){this.hit(f,o,at.damage,{stun:.55,knock:110,ultimate:true});this.shake=.35;}
@@ -122,15 +123,16 @@ export class FightEngine {
    f.x=clamp(f.x+f.dir*760*dt,RULES.left,RULES.right);
    if(!at.hit&&Math.abs(f.x-o.x)<140&&Math.abs(f.y-o.y)<170){at.hit=true;this.hit(f,o,at.damage,{status:at.status,stun:.3,knock:45});}
   }
-  if(at.fired&&['flurry','barrage','quake'].includes(at.type)){
+  if(at.fired&&['flurry','barrage','quake','rain'].includes(at.type)){
    at.nextPulse-=dt;
-   const total=at.type==='flurry'?6:at.type==='barrage'?5:at.ultimate?3:1;
+   const total=at.type==='flurry'?6:at.type==='barrage'?5:at.type==='rain'?5:at.ultimate?3:1;
    if(at.type==='flurry'&&Math.abs(f.x-o.x)>105)f.x=clamp(f.x+f.dir*520*dt,RULES.left,RULES.right);
    if(at.nextPulse<=0&&at.pulse<total){
-    at.nextPulse=at.type==='flurry'?.14:.2;at.pulse++;
+    at.nextPulse=at.type==='flurry'?.14:.22;at.pulse++;
     if(at.type==='flurry'&&Math.abs(f.x-o.x)<190&&Math.abs(f.y-o.y)<175)this.hit(f,o,at.damage,{stun:.15,knock:4,ultimate:true});
     if(at.type==='barrage')this.projectile(f,{damage:at.damage,status:at.status??f.data.ultimate?.status,y:f.y-100-(at.pulse%2)*30,speed:620});
     if(at.type==='quake'){this.projectile(f,{damage:at.damage,ground:true,y:RULES.floor-15,speed:440,big:at.ultimate});this.shake=.14;}
+    if(at.type==='rain'){const spreadX=(at.pulse-3)*55+(this.random()-.5)*90;this.projectile(f,{damage:at.damage,status:f.data.ultimate?.status,x:o.x+spreadX,y:-70,vx:0,vy:600,isRisol:true,radius:32,life:2});this.shake=.06;}
    }
    if(at.pulse<total||at.nextPulse>0)return;
   }
