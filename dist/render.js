@@ -9,7 +9,7 @@ export const ATLAS={
  bayu:{top:255,bottom:812,x:[0,330,755,1070,1536],anchor:[165,520,880,1280]},
  sekar:{top:270,bottom:805,x:[0,385,775,1130,1536],anchor:[185,555,910,1310]},
  guntur:{top:250,bottom:785,x:[0,345,775,1100,1536],anchor:[175,535,910,1305]},
- lala:{top:60,bottom:840,x:[0,316,632,948,1264],anchor:[158,474,790,1106]}
+ lala:{top:20,bottom:1010,x:[0,384,768,1152,1536],anchor:[192,560,910,1330]}
 };
 export class Renderer{
  constructor(canvas,engine){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.engine=engine;this.images={};this.clock=0;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;}
