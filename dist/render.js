@@ -132,15 +132,53 @@ export class Renderer{
   for(const f of e.fighters){
    const altitude=RULES.floor-f.y;
    c.save();c.globalAlpha=.32;c.fillStyle='#07070e';c.beginPath();c.ellipse(f.x,RULES.floor+5,80-altitude*.06,13,0,0,Math.PI*2);c.fill();c.restore();
-   let pose=0,sy=1,rotate=0;
-   if(f.attack){pose=f.attack.kind==='punch'?1:f.attack.kind==='kick'?2:3;if(f.attack.t<f.attack.startup*.6)pose=0;}
-   if(f.blocking){sy=.94;rotate=-.08}
-   if(f.stun>0){rotate=-.12;pose=0}
-   if(f.hp<=0){rotate=-1.35;sy=.9;}
-   let bob=this.reduced||e.phase==='paused'?0:Math.sin(this.clock*(f.vx?16:4)+f.index)* (f.vx?4:2);
-   if(f.shield>0){c.save();c.strokeStyle='#e9ce90bb';c.lineWidth=4;c.beginPath();c.ellipse(f.x,f.y-130,93,148,0,0,Math.PI*2);c.stroke();c.restore();}
-   if(f.blocking){c.save();c.strokeStyle=f.guard<30?'#ff806b':'#a4eaff';c.lineWidth=4;c.beginPath();c.arc(f.x,f.y-120,88,f.dir>0?-1.2:1.95,f.dir>0?1.2:4.3);c.stroke();c.restore();}
-   this.sprite(c,f.data.id,pose,f.x,f.y+bob,e.height(f),f.dir,{sy,rotate,flash:f.flash>0});
+    let pose=0,sy=1,sx=1,rotate=0,bob=0;
+    const isGrounded=f.y>=RULES.floor-0.1;
+    const isMovingForward=f.vx!==0&&(Math.sign(f.vx)===f.dir);
+    const isMovingBackward=f.vx!==0&&(Math.sign(f.vx)===-f.dir);
+
+    if(!this.reduced&&e.phase!=='paused'){
+     if(!isGrounded){
+      if(f.vy<-100){rotate=f.dir*0.08;sy=1.04;sx=0.96;bob=-4;}
+      else if(f.vy>100){rotate=-f.dir*0.05;sy=0.95;sx=1.03;bob=2;}
+     }else if(isMovingForward){
+      const stepPhase=this.clock*14+f.index*1.5;
+      bob=-Math.abs(Math.sin(stepPhase))*7;
+      rotate=f.dir*0.08+Math.sin(stepPhase)*0.03;
+      sy=0.97+Math.sin(stepPhase*2)*0.03;
+      sx=1.03-Math.sin(stepPhase*2)*0.03;
+      if(Math.sin(stepPhase)<-0.85&&Math.random()<0.22){
+       this.fx(f.x-f.dir*25,RULES.floor-15,0,40,0.18,(Math.random()-0.5)*0.4);
+      }
+     }else if(isMovingBackward){
+      const stepPhase=this.clock*16+f.index*1.5;
+      bob=-Math.abs(Math.cos(stepPhase))*5;
+      rotate=-f.dir*0.06+Math.cos(stepPhase)*0.02;
+      sy=0.96;sx=1.02;
+      if(Math.cos(stepPhase)<-0.85&&Math.random()<0.18){
+       this.fx(f.x+f.dir*20,RULES.floor-15,0,35,0.14,(Math.random()-0.5)*0.4);
+      }
+     }else{
+      const breath=Math.sin(this.clock*3.5+f.index);
+      bob=breath*2.5;
+      sy=1.0+breath*0.018;
+      sx=1.0-breath*0.015;
+     }
+    }
+
+    if(f.attack){
+     pose=f.attack.kind==='punch'?1:f.attack.kind==='kick'?2:3;
+     if(f.attack.t<f.attack.startup*.6)pose=0;
+     if(f.attack.kind==='punch')rotate+=f.dir*0.05;
+     if(f.attack.kind==='kick')rotate+=f.dir*0.07;
+    }
+    if(f.blocking){sy*=0.94;rotate=-f.dir*0.08;}
+    if(f.stun>0){rotate=-f.dir*0.14;pose=0;sy*=0.96;}
+    if(f.hp<=0){rotate=-f.dir*1.35;sy=0.9;}
+
+    if(f.shield>0){c.save();c.strokeStyle='#e9ce90bb';c.lineWidth=4;c.beginPath();c.ellipse(f.x,f.y-130,93,148,0,0,Math.PI*2);c.stroke();c.restore();}
+    if(f.blocking){c.save();c.strokeStyle=f.guard<30?'#ff806b':'#a4eaff';c.lineWidth=4;c.beginPath();c.arc(f.x,f.y-120,88,f.dir>0?-1.2:1.95,f.dir>0?1.2:4.3);c.stroke();c.restore();}
+    this.sprite(c,f.data.id,pose,f.x,f.y+bob,e.height(f),f.dir,{sy,sx,rotate,flash:f.flash>0});
    if(f.burn>0)this.fx(f.x,f.y-60,1,75,.45);
    if(f.slow>0)this.fx(f.x,f.y-30,2,90,.4);
    if(f.summon>0){
