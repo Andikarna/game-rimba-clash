@@ -1,15 +1,15 @@
 import {ROSTER,RULES} from './roster.js';
 // Frame rectangles preserve authored PNGs; the renderer selects poses at runtime.
 export const ATLAS={
- irma:{top:210,bottom:810,x:[0,355,785,1100,1536],anchor:[175,540,900,1285]},
- lukman:{top:255,bottom:745,x:[0,345,770,1090,1536],anchor:[170,535,900,1275]},
- fahrudin:{top:205,bottom:780,x:[0,330,775,1110,1536],anchor:[165,535,910,1300]},
- raka:{top:240,bottom:790,x:[0,345,750,1090,1536],anchor:[170,520,880,1275]},
- nadira:{top:245,bottom:835,x:[0,390,775,1090,1536],anchor:[180,530,905,1280]},
- bayu:{top:255,bottom:812,x:[0,330,755,1070,1536],anchor:[165,520,880,1280]},
- sekar:{top:270,bottom:805,x:[0,385,775,1130,1536],anchor:[185,555,910,1310]},
- guntur:{top:250,bottom:785,x:[0,345,775,1100,1536],anchor:[175,535,910,1305]},
- lala:{top:270,bottom:805,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]}
+ irma:{top:135,bottom:810,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]},
+ lukman:{top:250,bottom:745,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]},
+ fahrudin:{top:195,bottom:780,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]},
+ raka:{top:235,bottom:790,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]},
+ nadira:{top:185,bottom:830,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]},
+ bayu:{top:250,bottom:810,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]},
+ sekar:{top:265,bottom:805,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]},
+ guntur:{top:245,bottom:780,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]},
+ lala:{top:265,bottom:805,x:[0,384,768,1152,1536],anchor:[192,576,960,1344]}
 };
 export class Renderer{
  constructor(canvas,engine){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.engine=engine;this.images={};this.clock=0;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;}
@@ -23,8 +23,6 @@ export class Renderer{
   context.save();context.translate(x,y);context.scale(dir*(opts.sx||1),opts.sy||1);if(opts.rotate)context.rotate(opts.rotate);if(opts.alpha!==undefined)context.globalAlpha=opts.alpha;
   if(opts.flash)context.filter='brightness(1.7)';
   const dx=(left-a.anchor[pose])*scale,dy=-height,w=(right-left)*scale;
-  // Kick poses have a broad upper silhouette but a narrow supporting leg.
-  if(pose===2){context.beginPath();context.moveTo(dx,dy);context.lineTo(dx+w,dy);context.lineTo(dx+w,dy+height*.35);context.lineTo(dx+w*.77,dy+height*.7);context.lineTo(dx+w*.77,0);context.lineTo(dx,0);context.closePath();context.clip();}
   context.drawImage(image,left,a.top,right-left,sourceHeight,dx,dy,w,height);
   context.restore();
  }
