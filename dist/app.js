@@ -13,7 +13,7 @@ function notify(text,seconds=1.5){notice=text;noticeUntil=performance.now()+seco
 function select(i){
  if(engine.phase!=='select')return;
  selected=i;picks[target]=i;const f=ROSTER[i];document.documentElement.style.setProperty('--accent',f.color);
- $('fighter-class').textContent=f.role;$('fighter-number').textContent=String(i+1).padStart(2,'0')+' / 08';$('fighter-name').textContent=f.name;$('fighter-title').textContent=f.title.toUpperCase();$('fighter-story').textContent=f.story;
+ $('fighter-class').textContent=f.role;$('fighter-number').textContent=String(i+1).padStart(2,'0')+' / '+String(ROSTER.length).padStart(2,'0');$('fighter-name').textContent=f.name;$('fighter-title').textContent=f.title.toUpperCase();$('fighter-story').textContent=f.story;
  $('selected-p1').textContent=ROSTER[picks[0]].short;$('selected-p2').textContent=ROSTER[picks[1]].short;
  $('stats').innerHTML=['POWER','SPEED','DEFENSE'].map((s,j)=>'<div><div class="stat-label">'+s+'<span>'+f.stats[j]+'/5</span></div><div class="stat-bars">'+[0,1,2,3,4].map(n=>'<i class="'+(n<f.stats[j]?'on':'')+'"></i>').join('')+'</div></div>').join('');
  $('skills').innerHTML='<div class="skill-row"><span>J/K</span><div><b>Pukul & Tendang</b><p>Serangan dasar · Combo jarak dekat</p></div></div><div class="skill-row"><span>L</span><div><b>'+f.special.name+'</b><p>'+f.special.description+'</p></div></div><div class="skill-row"><span>I</span><div><b>'+f.ultimate.name+'</b><p>'+f.ultimate.description+'</p></div></div>';
